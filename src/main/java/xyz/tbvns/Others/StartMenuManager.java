@@ -121,20 +121,4 @@ public class StartMenuManager {
             e.printStackTrace();
         }
     }
-
-    // ========================================================================
-    // Example Usage
-    // ========================================================================
-    public static void main(String[] args) {
-        String appName = "TbvnsAppStore";
-        String javaPath = "C:\\Users\\Tbvns\\tbvns\\bin\\java\\bin\\java.exe"; // Windows
-        String jarFilePath = "C:\\Users\\Tbvns\\tbvns\\bin\\TbvnsAppStore.jar";
-        String iconPath = "C:\\Users\\Tbvns\\OneDrive\\Images\\BigLogo.ico"; // Windows
-
-        // For Linux:
-        // String javaPath = "/usr/bin/java";
-        // String iconPath = "/opt/tbvns/icon.png";
-
-        addToStartMenu(appName, javaPath, jarFilePath, iconPath);
-    }
 }

@@ -20,7 +20,7 @@ public class InstallerJava {
     public static String downloadJava(JProgressBar bar, String dlPath) {
         SystemInfo info = new SystemInfo();
         String arch = getArchitecture();
-        String os = info.getOperatingSystem().getFamily().toLowerCase();
+        String os = getOs(info.getOperatingSystem().getFamily().toLowerCase());
         String url = generateLink(arch, "21", "jre", os);
 
         return downloadFile(url, dlPath, bar);
@@ -117,15 +117,6 @@ public class InstallerJava {
     }
 
     @SneakyThrows
-    public static void extractJava(String path) {
-        File file = new File(path);
-        ZipFile zipFile = new ZipFile(file);
-        File javaBin = new File(Constant.resFolder + "/bin");
-        javaBin.mkdirs();
-        zipFile.extractAll(javaBin.getPath());
-    }
-
-    @SneakyThrows
     public static void renameJava() {
         File javaBin = new File(Constant.resFolder + "/bin");
         File java = null;
@@ -149,10 +140,21 @@ public class InstallerJava {
             if (info.getOperatingSystem().getFamily().toLowerCase().contains("win")) {
                 Constant.javaBinLocation = java.getPath() + "/bin/javaw.exe";
             } else {
-                Constant.javaBinLocation = java.getPath() + "/bin/javaw";
+                Constant.javaBinLocation = java.getPath() + "/bin/java";
+                new File(Constant.javaBinLocation).setExecutable(true);
             }
         }
         System.out.println(java.getPath());
         System.out.println(Constant.javaBinLocation);
+    }
+
+    public static String getOs(String family) {
+        if (family.contains("nix") || family.contains("nux")) {
+            return "linux";
+        } else if (family.toLowerCase().contains("win")) {
+            return "windows";
+        } else {
+            throw new RuntimeException("Os not supported !");
+        }
     }
 }

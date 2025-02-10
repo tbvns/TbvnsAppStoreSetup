@@ -2,6 +2,7 @@ package xyz.tbvns.Windows;
 
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
+import oshi.SystemInfo;
 import xyz.tbvns.Constant;
 import xyz.tbvns.Main;
 import xyz.tbvns.Others.AutoStart;
@@ -79,7 +80,13 @@ public class DownloadWindow {
 
     @SneakyThrows
     public static void copyLogo() {
-        InputStream stream = Main.class.getResourceAsStream("/logo.ico");
-        FileUtils.copyToFile(stream, new File(Constant.resFolder + "/bin/AppStore.ico"));
+        String os = InstallerJava.getOs(new SystemInfo().getOperatingSystem().getFamily());
+        if (os.contains("nix") || os.contains("nux")) {
+            InputStream stream = Main.class.getResourceAsStream("/logo.png");
+            FileUtils.copyToFile(stream, new File(Constant.resFolder + "/bin/AppStore.png"));
+        } else {
+            InputStream stream = Main.class.getResourceAsStream("/logo.ico");
+            FileUtils.copyToFile(stream, new File(Constant.resFolder + "/bin/AppStore.ico"));
+        }
     }
 }

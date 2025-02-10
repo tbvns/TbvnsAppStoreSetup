@@ -2,7 +2,9 @@ package xyz.tbvns.Windows;
 
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
+import oshi.SystemInfo;
 import xyz.tbvns.Constant;
+import xyz.tbvns.Installer.InstallerJava;
 import xyz.tbvns.Others.StartMenuManager;
 
 import javax.swing.*;
@@ -48,7 +50,22 @@ public class FinishWindow {
 
         button.addActionListener(actionEvent -> {
             if (addToMenu.isSelected()) {
-                StartMenuManager.addToStartMenu("Tbvns's app store", Constant.javaBinLocation, Constant.resFolder + "/bin/AppStore.jar", Constant.resFolder + "/bin/AppStore.ico");
+                String os = InstallerJava.getOs(new SystemInfo().getOperatingSystem().getFamily());
+                if (os.contains("win")) {
+                    StartMenuManager.addToStartMenu(
+                            "Tbvns's app store",
+                            Constant.javaBinLocation,
+                            Constant.resFolder + "/bin/AppStore.jar",
+                            Constant.resFolder + "/bin/AppStore.ico"
+                    );
+                } else {
+                    StartMenuManager.addToStartMenu(
+                            "Tbvns's app store",
+                            Constant.javaBinLocation,
+                            Constant.resFolder + "/bin/AppStore.jar",
+                            Constant.resFolder + "/bin/AppStore.png"
+                    );
+                }
             }
             if (start.isEnabled()) {
                 try {
