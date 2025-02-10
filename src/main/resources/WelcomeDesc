@@ -1,0 +1,10 @@
+<html>
+    <div style="text-align: center; margin: 25px;">
+        <h1>Welcome to the TBVNS's App Store Installer</h1>
+        <p>Thank you for choosing TBVNS's App Store! This installer will guide you through the setup process, ensuring that
+        everything is ready for you to explore and install apps with ease.</p>
+        <p>To run TBVNS's App Store smoothly, Java 21 is required. If it is not already installed on your system, this
+        installer will set it up for you automatically.</p>
+        <p>Click <b>Next</b> to continue with the installation.</p>
+    </div>
+</html>
