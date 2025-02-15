@@ -10,6 +10,7 @@ import xyz.tbvns.Installer.FileExtractor;
 import xyz.tbvns.Installer.InstallerAppStore;
 import xyz.tbvns.Installer.InstallerJava;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -17,12 +18,14 @@ import java.io.File;
 import java.io.InputStream;
 
 public class DownloadWindow {
+    @SneakyThrows
     public static void open() {
         JFrame frame = new JFrame();
         frame.setTitle("Installing TBVNS's app store...");
         frame.setSize(300, 100);
         frame.setResizable(false);
         WindowUtils.center(frame);
+        frame.setIconImage(ImageIO.read(Main.class.getResource("/logo.png")));
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));

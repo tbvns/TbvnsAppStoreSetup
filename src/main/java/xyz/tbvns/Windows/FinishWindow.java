@@ -5,8 +5,10 @@ import org.apache.commons.io.IOUtils;
 import oshi.SystemInfo;
 import xyz.tbvns.Constant;
 import xyz.tbvns.Installer.InstallerJava;
+import xyz.tbvns.Main;
 import xyz.tbvns.Others.StartMenuManager;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.io.InputStream;
@@ -18,6 +20,7 @@ public class FinishWindow {
         frame.setSize(400, 350);
         frame.setResizable(false);
         WindowUtils.center(frame);
+        frame.setIconImage(ImageIO.read(Main.class.getResource("/logo.png")));
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -77,6 +80,7 @@ public class FinishWindow {
                     throw new RuntimeException(e);
                 }
             }
+            Runtime.getRuntime().exit(0);
         });
 
         frame.setVisible(true);

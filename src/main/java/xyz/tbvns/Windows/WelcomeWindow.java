@@ -1,6 +1,8 @@
 package xyz.tbvns.Windows;
 
+import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
+import xyz.tbvns.Main;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -25,9 +27,9 @@ public class WelcomeWindow {
     private void initializeMainPanel() {
         // Main panel setup (BorderLayout, size constraints)
         main = new JPanel(new BorderLayout(0, 0));
-        main.setMaximumSize(new Dimension(500, 400));
-        main.setMinimumSize(new Dimension(500, 400));
-        main.setPreferredSize(new Dimension(500, 400));
+        main.setMaximumSize(new Dimension(500, 425));
+        main.setMinimumSize(new Dimension(500, 425));
+        main.setPreferredSize(new Dimension(500, 425));
 
         // Create and add components for each region
         main.add(createNorthPanel(), BorderLayout.NORTH);
@@ -96,6 +98,7 @@ public class WelcomeWindow {
         });
     }
 
+    @SneakyThrows
     public void show() {
         frame = new JFrame("TBVNS's app store setup");
         frame.setContentPane(main);
@@ -104,5 +107,6 @@ public class WelcomeWindow {
         frame.pack(); // Use preferred sizes from components
         frame.setLocationRelativeTo(null); // Center window
         frame.setVisible(true);
+        frame.setIconImage(ImageIO.read(Main.class.getResource("/logo.png")));
     }
 }
