@@ -60,7 +60,19 @@ public class StartMenuManager {
             psScript.append("$ws = New-Object -ComObject WScript.Shell;\n");
             psScript.append(String.format("$shortcut = $ws.CreateShortcut('%s');\n", shortcutPath));
             psScript.append(String.format("$shortcut.TargetPath = '%s';\n", javaPath));
-            psScript.append(String.format("$shortcut.Arguments = '-jar \"%s\"';\n", jarFilePath));
+
+            // Add JVM arguments before -jar
+            psScript.append("$shortcut.Arguments = '");
+            psScript.append("--add-exports=java.base/jdk.internal.ref=ALL-UNNAMED ");
+            psScript.append("--add-exports=java.base/sun.nio.ch=ALL-UNNAMED ");
+            psScript.append("--add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED ");
+            psScript.append("--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED ");
+            psScript.append("--add-opens=jdk.compiler/com.sun.tools.javac=ALL-UNNAMED ");
+            psScript.append("--add-opens=java.base/java.lang=ALL-UNNAMED ");
+            psScript.append("--add-opens=java.base/java.lang.reflect=ALL-UNNAMED ");
+            psScript.append("--add-opens=java.base/java.io=ALL-UNNAMED ");
+            psScript.append("--add-opens=java.base/java.util=ALL-UNNAMED ");
+            psScript.append(String.format("-jar \"%s\"';\n", jarFilePath));
 
             // Only set icon if a valid path is provided
             if (iconPath != null && !iconPath.isEmpty()) {
@@ -103,7 +115,17 @@ public class StartMenuManager {
             String desktopFileContent = String.format(
                     "[Desktop Entry]\n" +
                             "Name=%s\n" +
-                            "Exec=%s -jar %s\n" +
+                            "Exec=%s " +
+                            "--add-exports=java.base/jdk.internal.ref=ALL-UNNAMED " +
+                            "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED " +
+                            "--add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED " +
+                            "--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED " +
+                            "--add-opens=jdk.compiler/com.sun.tools.javac=ALL-UNNAMED " +
+                            "--add-opens=java.base/java.lang=ALL-UNNAMED " +
+                            "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED " +
+                            "--add-opens=java.base/java.io=ALL-UNNAMED " +
+                            "--add-opens=java.base/java.util=ALL-UNNAMED " +
+                            "-jar %s\n" +
                             "Icon=%s\n" +
                             "Terminal=false\n" +
                             "Type=Application\n" +

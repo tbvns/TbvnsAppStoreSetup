@@ -9,7 +9,17 @@ public class AutoStart {
     // Method for Windows
     public static void addToStartupWindows(String appName, String javaPath, String jarFilePath) {
         // Build the command to run the JAR file
-        String command = "\"" + javaPath.replace("/", "\\") + "\" -jar \"" + jarFilePath + "\" autostart";
+        String command = "\"" + javaPath.replace("/", "\\") + "\" " +
+                "--add-exports=java.base/jdk.internal.ref=ALL-UNNAMED " +
+                "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED " +
+                "--add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED " +
+                "--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED " +
+                "--add-opens=jdk.compiler/com.sun.tools.javac=ALL-UNNAMED " +
+                "--add-opens=java.base/java.lang=ALL-UNNAMED " +
+                "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED " +
+                "--add-opens=java.base/java.io=ALL-UNNAMED " +
+                "--add-opens=java.base/java.util=ALL-UNNAMED " +
+                "-jar \"" + jarFilePath + "\" autostart";
 
         try {
             // Execute the `reg add` command to add/update the Registry entry
@@ -67,13 +77,24 @@ public class AutoStart {
         try (PrintWriter writer = new PrintWriter(new FileWriter(desktopFile))) {
             writer.println("[Desktop Entry]");
             writer.println("Name=MyApp");
-            writer.println("Exec=" + javaPath + " -jar " + jarFilePath + " autostart");
+            writer.println("Exec=" + javaPath + " " +
+                    "--add-exports=java.base/jdk.internal.ref=ALL-UNNAMED " +
+                    "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED " +
+                    "--add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED " +
+                    "--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED " +
+                    "--add-opens=jdk.compiler/com.sun.tools.javac=ALL-UNNAMED " +
+                    "--add-opens=java.base/java.lang=ALL-UNNAMED " +
+                    "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED " +
+                    "--add-opens=java.base/java.io=ALL-UNNAMED " +
+                    "--add-opens=java.base/java.util=ALL-UNNAMED " +
+                    "-jar " + jarFilePath + " autostart");
             writer.println("Type=Application");
             writer.println("X-GNOME-Autostart-enabled=true");
             System.out.println("Added to startup: " + desktopFile.getName());
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     // Method to detect the operating system and call the appropriate function
