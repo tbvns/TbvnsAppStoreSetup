@@ -1,5 +1,5 @@
 ![tbvnsappstorebanner](https://github.com/user-attachments/assets/7d3695ec-6a12-472f-b45f-5f37f694f69e)
-# TbvnsAppStoreSetup 🛠️
+# Tbvns's App Store Setup 🛠️
 
 ### *"A hassle-free way to install and set up Tbvns's App Store!"* 🚀  
 
