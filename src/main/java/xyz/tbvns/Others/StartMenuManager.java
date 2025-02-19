@@ -5,7 +5,9 @@ import com.sun.jna.platform.win32.ShlObj;
 import org.apache.commons.io.IOUtils;
 import oshi.SystemInfo;
 import oshi.software.os.OperatingSystem;
+import xyz.tbvns.Constant;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -42,57 +44,62 @@ public class StartMenuManager {
     // ========================================================================
     public static void addToStartMenuWindows(String appName, String javaPath, String jarFilePath, String iconPath) {
         try {
-            // Get the Start Menu Programs folder (requires admin privileges for all users)
+            // 1. Write the long JVM arguments into a text file.
+            // These arguments are intended for the JVM, so we’ll use the @ syntax.
+            String argsFilePath = Constant.resFolder + "/start.txt";
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(argsFilePath))) {
+                writer.write("--add-exports=java.base/jdk.internal.ref=ALL-UNNAMED ");
+                writer.write("--add-exports=java.base/sun.nio.ch=ALL-UNNAMED ");
+                writer.write("--add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED ");
+                writer.write("--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED ");
+                writer.write("--add-opens=jdk.compiler/com.sun.tools.javac=ALL-UNNAMED ");
+                writer.write("--add-opens=java.base/java.lang=ALL-UNNAMED ");
+                writer.write("--add-opens=java.base/java.lang.reflect=ALL-UNNAMED ");
+                writer.write("--add-opens=java.base/java.io=ALL-UNNAMED ");
+                writer.write("--add-opens=java.base/java.util=ALL-UNNAMED");
+            }
+
+            // 2. Determine the Start Menu Programs folder and shortcut path.
             String startMenuPath = Shell32Util.getFolderPath(ShlObj.CSIDL_COMMON_PROGRAMS);
             String shortcutPath = Paths.get(startMenuPath, appName + ".lnk").toString();
 
-            // Fix apostrophes in paths (escape single quotes for PowerShell)
+            // 3. Escape apostrophes in the paths for use in the PowerShell script.
             shortcutPath = shortcutPath.replace("'", "''");
             javaPath = javaPath.replace("'", "''");
             jarFilePath = jarFilePath.replace("'", "''");
+            String escapedArgsFilePath = argsFilePath.replace("'", "''");
 
-            // Create a temporary PowerShell script file
+            // 4. Create a temporary PowerShell script to generate the shortcut.
             File tempScript = File.createTempFile("create_shortcut", ".ps1");
-            tempScript.deleteOnExit();
+//            tempScript.deleteOnExit();
 
-            // PowerShell script content
             StringBuilder psScript = new StringBuilder();
             psScript.append("$ws = New-Object -ComObject WScript.Shell;\n");
             psScript.append(String.format("$shortcut = $ws.CreateShortcut('%s');\n", shortcutPath));
+            // Set the shortcut target to the Java executable.
             psScript.append(String.format("$shortcut.TargetPath = '%s';\n", javaPath));
+            // Use the JVM's argument file support by prefixing the file with '@'.
+            // Note: The JVM arguments (read from start.txt) must come before the -jar switch.
+            psScript.append(String.format("$shortcut.Arguments = '@%s -jar \"%s\"';\n", escapedArgsFilePath, jarFilePath));
 
-            // Add JVM arguments before -jar
-            psScript.append("$shortcut.Arguments = '");
-            psScript.append("--add-exports=java.base/jdk.internal.ref=ALL-UNNAMED ");
-            psScript.append("--add-exports=java.base/sun.nio.ch=ALL-UNNAMED ");
-            psScript.append("--add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED ");
-            psScript.append("--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED ");
-            psScript.append("--add-opens=jdk.compiler/com.sun.tools.javac=ALL-UNNAMED ");
-            psScript.append("--add-opens=java.base/java.lang=ALL-UNNAMED ");
-            psScript.append("--add-opens=java.base/java.lang.reflect=ALL-UNNAMED ");
-            psScript.append("--add-opens=java.base/java.io=ALL-UNNAMED ");
-            psScript.append("--add-opens=java.base/java.util=ALL-UNNAMED ");
-            psScript.append(String.format("-jar \"%s\"';\n", jarFilePath));
-
-            // Only set icon if a valid path is provided
+            // Optionally, set the icon if one is provided.
             if (iconPath != null && !iconPath.isEmpty()) {
                 iconPath = iconPath.replace("'", "''");
                 psScript.append(String.format("$shortcut.IconLocation = '%s';\n", iconPath));
             }
-
             psScript.append("$shortcut.Save();\n");
 
-            // Write to the temporary script file
+            // 5. Write the PowerShell script to the temporary file.
             try (FileWriter writer = new FileWriter(tempScript)) {
                 writer.write(psScript.toString());
             }
 
-            // Run PowerShell script as admin
+            // 6. Execute the PowerShell script as administrator.
             String command = String.format(
                     "powershell -Command \"Start-Process powershell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File \"%s\"' -Verb RunAs\"",
                     tempScript.getAbsolutePath()
             );
-
+            System.out.println(command);
             Process process = Runtime.getRuntime().exec(new String[]{"cmd.exe", "/c", command});
             int exitCode = process.waitFor();
 
