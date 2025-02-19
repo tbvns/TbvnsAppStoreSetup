@@ -23,7 +23,7 @@ TbvnsAppStoreSetup is a lightweight, cross-platform tool designed to simplify th
 To install Tbvns's App Store using TbvnsAppStoreSetup:
 1. Download the setup tool for your platform.
 2. Run the installer and follow the on-screen instructions.
-3. Enjoy a hassle-free setup with Java included, auto-start functionality, and start menu integration! �
+3. Enjoy a hassle-free setup with Java included, auto-start functionality, and start menu integration!
 
 ## Ownership and Licensing 📜
 - **Owned Content 🔐**: TbvnsAppStoreSetup and its associated scripts are **owned exclusively by me**. All rights are reserved. Unauthorized distribution, modification, or use of my code is strictly prohibited.
