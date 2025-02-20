@@ -6,7 +6,7 @@
 TbvnsAppStoreSetup is a lightweight, cross-platform tool designed to simplify the installation and setup of **Tbvns's App Store**. It includes a bundled version of Java, ensures the app store starts automatically with your system, and adds it to your start menu for easy access.  
 
 > [!Warning]
-> For some unknown reason, Kaspesky flags this as a virus, if you encounter any issues, you can download the raw jar of Tbvsn's App Store [here](https://github.com/tbvns/TbvnsAppStore/releases/latest/)
+> For some unknown reason, Kaspesky flags this as a virus, if you encounter any issues, you can download the raw jar of Tbvns's App Store [here](https://github.com/tbvns/TbvnsAppStore/releases/latest/)
 
 ## Features ✨
 - **Java Bundled 📦**: Comes with a compatible version of Java, so you don’t need to worry about installing it separately.
