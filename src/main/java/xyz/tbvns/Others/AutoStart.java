@@ -1,6 +1,7 @@
 package xyz.tbvns.Others;
 import oshi.SystemInfo;
 import oshi.software.os.OperatingSystem;
+import xyz.tbvns.ErrorHandler;
 
 import java.io.*;
 
@@ -29,7 +30,7 @@ public class AutoStart {
                 System.out.println("Failed to add/update startup entry: " + appName);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            ErrorHandler.handle(e, true);
         }
     }
 
@@ -57,7 +58,7 @@ public class AutoStart {
                     System.out.println("Already in startup: " + desktopFile.getName());
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                ErrorHandler.handle(e, true);
             }
         } else {
             createLinuxStartupFile(desktopFile, javaPath, jarFilePath);
@@ -74,7 +75,7 @@ public class AutoStart {
             writer.println("X-GNOME-Autostart-enabled=true");
             System.out.println("Added to startup: " + desktopFile.getName());
         } catch (IOException e) {
-            e.printStackTrace();
+            ErrorHandler.handle(e, true);
         }
 
     }

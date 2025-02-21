@@ -4,12 +4,14 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import oshi.SystemInfo;
 import xyz.tbvns.Constant;
+import xyz.tbvns.ErrorHandler;
 
 import javax.swing.*;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.logging.Handler;
 
 public class InstallerAppStore {
     private static void downloadFileFromGitHub(String repoOwner, String repoName, String savePath, JProgressBar bar) throws Exception {
@@ -29,6 +31,8 @@ public class InstallerAppStore {
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
             }
+        } catch (Exception e) {
+            ErrorHandler.handle(e, true);
         }
 
         JSONObject jsonResponse = new JSONObject(response.toString());
@@ -44,7 +48,7 @@ public class InstallerAppStore {
         }
 
         if (downloadUrl == null) {
-            throw new IOException("Download URL for TbvnsAppStore.jar not found.");
+            ErrorHandler.handle(new IOException("Download URL for TbvnsAppStore.jar not found."), true);
         }
 
         downloadFile(downloadUrl, savePath, bar);
@@ -80,6 +84,8 @@ public class InstallerAppStore {
                 int progress = (int) ((totalBytesRead * 100) / fileLength);
                 bar.setValue(progress);
             }
+        } catch (Exception e) {
+            ErrorHandler.handle(e, true);
         } finally {
             connection.disconnect();
         }
@@ -93,7 +99,7 @@ public class InstallerAppStore {
         try {
             downloadFileFromGitHub(repoOwner, repoName, savePath, bar);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            ErrorHandler.handle(e, true);
         }
     }
 }

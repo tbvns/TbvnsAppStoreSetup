@@ -5,6 +5,7 @@ import net.lingala.zip4j.ZipFile;
 import org.apache.commons.io.FileUtils;
 import oshi.SystemInfo;
 import xyz.tbvns.Constant;
+import xyz.tbvns.ErrorHandler;
 
 import javax.swing.*;
 import java.io.File;
@@ -26,48 +27,52 @@ public class InstallerJava {
         return downloadFile(url, dlPath, bar);
     }
 
-    @SneakyThrows
     private static String downloadFile(String fileURL, String savePath, JProgressBar bar) {
-        HttpURLConnection connection = (HttpURLConnection) new URL(fileURL).openConnection();
-        connection.setInstanceFollowRedirects(false); // Don't automatically follow redirects
-        connection.setRequestProperty("User-Agent", "Mozilla/5.0");
-        connection.connect();
-
-        // Handle redirection
-        int responseCode = connection.getResponseCode();
-        System.out.println(responseCode);
-
-        if (responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_MOVED_TEMP || responseCode == 307) {
-            String newUrl = connection.getHeaderField("Location");
-            fileURL = newUrl;
-            connection.disconnect(); // Close previous connection
-            connection = (HttpURLConnection) new URL(newUrl).openConnection();
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URL(fileURL).openConnection();
+            connection.setInstanceFollowRedirects(false); // Don't automatically follow redirects
             connection.setRequestProperty("User-Agent", "Mozilla/5.0");
             connection.connect();
-        }
 
-        String[] strings = fileURL.split("/");
-        savePath += strings[strings.length-1];
+            // Handle redirection
+            int responseCode = connection.getResponseCode();
+            System.out.println(responseCode);
 
-        int fileSize = connection.getContentLength();
-        SwingUtilities.invokeLater(() -> bar.setMaximum(fileSize));
-
-        try (InputStream inputStream = connection.getInputStream();
-             FileOutputStream outputStream = new FileOutputStream(savePath)) {
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            int totalBytesRead = 0;
-
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-                totalBytesRead += bytesRead;
-                int finalTotalBytesRead = totalBytesRead;
-                SwingUtilities.invokeLater(() -> bar.setValue(finalTotalBytesRead));
+            if (responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_MOVED_TEMP || responseCode == 307) {
+                String newUrl = connection.getHeaderField("Location");
+                fileURL = newUrl;
+                connection.disconnect(); // Close previous connection
+                connection = (HttpURLConnection) new URL(newUrl).openConnection();
+                connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+                connection.connect();
             }
-        }
 
-        connection.disconnect();
-        return savePath;
+            String[] strings = fileURL.split("/");
+            savePath += strings[strings.length-1];
+
+            int fileSize = connection.getContentLength();
+            SwingUtilities.invokeLater(() -> bar.setMaximum(fileSize));
+
+            try (InputStream inputStream = connection.getInputStream();
+                 FileOutputStream outputStream = new FileOutputStream(savePath)) {
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                int totalBytesRead = 0;
+
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                    totalBytesRead += bytesRead;
+                    int finalTotalBytesRead = totalBytesRead;
+                    SwingUtilities.invokeLater(() -> bar.setValue(finalTotalBytesRead));
+                }
+            }
+
+            connection.disconnect();
+            return savePath;
+        } catch (Exception e) {
+            ErrorHandler.handle(e, true);
+        }
+        return null;
     }
 
 
@@ -116,23 +121,25 @@ public class InstallerJava {
         }
     }
 
-    @SneakyThrows
     public static void renameJava() {
         File javaBin = new File(Constant.resFolder + "/bin");
         File java = null;
-        for (String s : javaBin.list()) {
-            if (s.contains("jre")) {
-                java = new File(javaBin.getPath() + "/" + s);
+        try {
+            for (String s : javaBin.list()) {
+                if (s.contains("jre")) {
+                    java = new File(javaBin.getPath() + "/" + s);
 
-                if (new File(javaBin.getPath() + "/java").exists()) {
-                    File file = new File(javaBin.getPath() + "/java");
-                    FileUtils.deleteDirectory(file);
+                    if (new File(javaBin.getPath() + "/java").exists()) {
+                        File file = new File(javaBin.getPath() + "/java");
+                        FileUtils.deleteDirectory(file);
+                    }
+                    File njava = new File(javaBin.getPath() + "/java");
+                    java.renameTo(njava);
+                    java = njava;
                 }
-                File njava = new File(javaBin.getPath() + "/java");
-                java.renameTo(njava);
-                java = njava;
-
             }
+        } catch (Exception e) {
+            ErrorHandler.handle(e, true);
         }
 
         if (java != null && java.exists()) {

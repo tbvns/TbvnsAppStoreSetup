@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import oshi.SystemInfo;
 import xyz.tbvns.Constant;
+import xyz.tbvns.ErrorHandler;
 import xyz.tbvns.Main;
 import xyz.tbvns.Others.AutoStart;
 import xyz.tbvns.Installer.FileExtractor;
@@ -45,10 +46,7 @@ public class DownloadWindow {
         startInstallProcess(frame, bar, info);
     }
 
-    @SneakyThrows
     public static void startInstallProcess(Frame frame, JProgressBar bar, Label label) {
-
-
         Thread firstStep = new Thread(() -> {
             setupJava(bar, label);
             setupAppStore(bar, label);
@@ -59,16 +57,19 @@ public class DownloadWindow {
         firstStep.start();
     }
 
-    @SneakyThrows
     public static void setupJava(JProgressBar bar, Label label) {
-        label.setText("Downloading java 21...");
-        String tmpFolder = Constant.resFolder + "/tmp";
-        new File(tmpFolder).mkdirs();
-        String savePath = tmpFolder + "/";
-        savePath = InstallerJava.downloadJava(bar, savePath);
-        label.setText("Extracting java 21...");
-        FileExtractor.extractJava(savePath);
-        InstallerJava.renameJava();
+        try {
+            label.setText("Downloading java 21...");
+            String tmpFolder = Constant.resFolder + "/tmp";
+            new File(tmpFolder).mkdirs();
+            String savePath = tmpFolder + "/";
+            savePath = InstallerJava.downloadJava(bar, savePath);
+            label.setText("Extracting java 21...");
+            FileExtractor.extractJava(savePath);
+            InstallerJava.renameJava();
+        } catch (Exception e) {
+            ErrorHandler.handle(e, true);
+        }
     }
 
     public static void setupAppStore(JProgressBar bar, Label label) {
@@ -81,15 +82,18 @@ public class DownloadWindow {
         copyLogo();
     }
 
-    @SneakyThrows
     public static void copyLogo() {
-        String os = InstallerJava.getOs(new SystemInfo().getOperatingSystem().getFamily());
-        if (os.contains("nix") || os.contains("nux")) {
-            InputStream stream = Main.class.getResourceAsStream("/logo.png");
-            FileUtils.copyToFile(stream, new File(Constant.resFolder + "/bin/AppStore.png"));
-        } else {
-            InputStream stream = Main.class.getResourceAsStream("/logo.ico");
-            FileUtils.copyToFile(stream, new File(Constant.resFolder + "/bin/AppStore.ico"));
+        try {
+            String os = InstallerJava.getOs(new SystemInfo().getOperatingSystem().getFamily());
+            if (os.contains("nix") || os.contains("nux")) {
+                InputStream stream = Main.class.getResourceAsStream("/logo.png");
+                FileUtils.copyToFile(stream, new File(Constant.resFolder + "/bin/AppStore.png"));
+            } else {
+                InputStream stream = Main.class.getResourceAsStream("/logo.ico");
+                FileUtils.copyToFile(stream, new File(Constant.resFolder + "/bin/AppStore.ico"));
+            }
+        } catch (Exception e) {
+            ErrorHandler.handle(e, true);
         }
     }
 }

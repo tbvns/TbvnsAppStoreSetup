@@ -10,6 +10,8 @@ import xyz.tbvns.Constant;
 import java.io.*;
 import org.apache.commons.compress.archivers.tar.*;
 import org.apache.commons.compress.compressors.gzip.*;
+import xyz.tbvns.ErrorHandler;
+
 import java.io.*;
 import java.util.zip.*;
 import java.nio.file.*;
@@ -27,6 +29,8 @@ public class FileExtractor {
             // Extract .zip file
             try (ZipFile zipFile = new ZipFile(file)) {
                 zipFile.extractAll(javaBin.getPath());
+            } catch (Exception e) {
+                ErrorHandler.handle(e, true);
             }
         } else if (extension.equalsIgnoreCase("tar.gz") || path.endsWith(".tar.gz")) {
             // Extract .tar.gz file
@@ -64,9 +68,13 @@ public class FileExtractor {
                         while ((length = tarIn.read(buffer)) != -1) {
                             out.write(buffer, 0, length);
                         }
+                    } catch (Exception e) {
+                        ErrorHandler.handle(e, true);
                     }
                 }
             }
+        } catch (Exception e) {
+            ErrorHandler.handle(e, true);
         }
     }
 }
