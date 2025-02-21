@@ -10,15 +10,6 @@ public class AutoStart {
     public static void addToStartupWindows(String appName, String javaPath, String jarFilePath) {
         // Build the command to run the JAR file
         String command = "\"" + javaPath.replace("/", "\\") + "\" " +
-                "--add-exports=java.base/jdk.internal.ref=ALL-UNNAMED " +
-                "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED " +
-                "--add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED " +
-                "--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED " +
-                "--add-opens=jdk.compiler/com.sun.tools.javac=ALL-UNNAMED " +
-                "--add-opens=java.base/java.lang=ALL-UNNAMED " +
-                "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED " +
-                "--add-opens=java.base/java.io=ALL-UNNAMED " +
-                "--add-opens=java.base/java.util=ALL-UNNAMED " +
                 "-jar \"" + jarFilePath + "\" autostart";
 
         try {
@@ -78,15 +69,6 @@ public class AutoStart {
             writer.println("[Desktop Entry]");
             writer.println("Name=MyApp");
             writer.println("Exec=" + javaPath + " " +
-                    "--add-exports=java.base/jdk.internal.ref=ALL-UNNAMED " +
-                    "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED " +
-                    "--add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED " +
-                    "--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED " +
-                    "--add-opens=jdk.compiler/com.sun.tools.javac=ALL-UNNAMED " +
-                    "--add-opens=java.base/java.lang=ALL-UNNAMED " +
-                    "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED " +
-                    "--add-opens=java.base/java.io=ALL-UNNAMED " +
-                    "--add-opens=java.base/java.util=ALL-UNNAMED " +
                     "-jar " + jarFilePath + " autostart");
             writer.println("Type=Application");
             writer.println("X-GNOME-Autostart-enabled=true");

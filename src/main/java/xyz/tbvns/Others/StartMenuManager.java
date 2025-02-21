@@ -44,21 +44,6 @@ public class StartMenuManager {
     // ========================================================================
     public static void addToStartMenuWindows(String appName, String javaPath, String jarFilePath, String iconPath) {
         try {
-            // 1. Write the long JVM arguments into a text file.
-            // These arguments are intended for the JVM, so we’ll use the @ syntax.
-            String argsFilePath = Constant.resFolder + "/start.txt";
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(argsFilePath))) {
-                writer.write("--add-exports=java.base/jdk.internal.ref=ALL-UNNAMED ");
-                writer.write("--add-exports=java.base/sun.nio.ch=ALL-UNNAMED ");
-                writer.write("--add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED ");
-                writer.write("--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED ");
-                writer.write("--add-opens=jdk.compiler/com.sun.tools.javac=ALL-UNNAMED ");
-                writer.write("--add-opens=java.base/java.lang=ALL-UNNAMED ");
-                writer.write("--add-opens=java.base/java.lang.reflect=ALL-UNNAMED ");
-                writer.write("--add-opens=java.base/java.io=ALL-UNNAMED ");
-                writer.write("--add-opens=java.base/java.util=ALL-UNNAMED");
-            }
-
             // 2. Determine the Start Menu Programs folder and shortcut path.
             String startMenuPath = Shell32Util.getFolderPath(ShlObj.CSIDL_COMMON_PROGRAMS);
             String shortcutPath = Paths.get(startMenuPath, appName + ".lnk").toString();
@@ -67,7 +52,6 @@ public class StartMenuManager {
             shortcutPath = shortcutPath.replace("'", "''");
             javaPath = javaPath.replace("'", "''");
             jarFilePath = jarFilePath.replace("'", "''");
-            String escapedArgsFilePath = argsFilePath.replace("'", "''");
 
             // 4. Create a temporary PowerShell script to generate the shortcut.
             File tempScript = File.createTempFile("create_shortcut", ".ps1");
@@ -80,7 +64,7 @@ public class StartMenuManager {
             psScript.append(String.format("$shortcut.TargetPath = '%s';\n", javaPath));
             // Use the JVM's argument file support by prefixing the file with '@'.
             // Note: The JVM arguments (read from start.txt) must come before the -jar switch.
-            psScript.append(String.format("$shortcut.Arguments = '@%s -jar \"%s\"';\n", escapedArgsFilePath, jarFilePath));
+            psScript.append(String.format("$shortcut.Arguments = '-jar \"%s\"';\n", jarFilePath));
 
             // Optionally, set the icon if one is provided.
             if (iconPath != null && !iconPath.isEmpty()) {
@@ -123,15 +107,6 @@ public class StartMenuManager {
                     "[Desktop Entry]\n" +
                             "Name=%s\n" +
                             "Exec=%s " +
-                            "--add-exports=java.base/jdk.internal.ref=ALL-UNNAMED " +
-                            "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED " +
-                            "--add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED " +
-                            "--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED " +
-                            "--add-opens=jdk.compiler/com.sun.tools.javac=ALL-UNNAMED " +
-                            "--add-opens=java.base/java.lang=ALL-UNNAMED " +
-                            "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED " +
-                            "--add-opens=java.base/java.io=ALL-UNNAMED " +
-                            "--add-opens=java.base/java.util=ALL-UNNAMED " +
                             "-jar %s\n" +
                             "Icon=%s\n" +
                             "Terminal=false\n" +
